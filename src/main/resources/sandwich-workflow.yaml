@@ -1,0 +1,23 @@
+workflow:
+  name: SandwichMaker
+  version: "1.0"
+  taskQueue: SANDWICH_TASK_QUEUE
+
+  steps:
+    - name: Gather Ingredients
+      activity: gatherIngredients
+
+    - name: Slice Bread
+      activity: sliceBread
+
+    - name: Add Condiments
+      activity: addCondiments
+
+    - name: Add Ingredients
+      activity: addIngredients
+
+    - name: Assemble Sandwich
+      activity: assembleSandwich
+
+    - name: Clean Up
+      activity: cleanUp
