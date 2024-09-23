@@ -8,7 +8,7 @@ workflow:
       activity: gatherIngredients
 
     - name: Slice Bread
-      activity: sliceBread
+      activity: sliceBreadNew
 
     - name: Add Condiments
       activity: addCondiments

@@ -4,7 +4,7 @@ public class SandwichActivitiesImpl implements SandwichActivities {
 
     @Override
     public void gatherIngredients() {
-        System.out.println("Gathering ingredients...");
+        System.out.println("Gathering ingredients 02 07...");
     }
 
     @Override

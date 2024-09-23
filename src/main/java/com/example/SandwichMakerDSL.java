@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
 
 public class SandwichMakerDSL implements SandwichWorkflow {
@@ -22,12 +24,12 @@ public class SandwichMakerDSL implements SandwichWorkflow {
 
     @Override
     public void makeSandwich() {
-        WorkflowDefinition workflow = loadWorkflowDefinition();
-        if (workflow == null || workflow.getSteps() == null) {
+        WorkflowData workflowData = loadWorkflowDefinition().getWorkflow();
+        if (workflowData == null || workflowData.getSteps() == null) {
             throw new IllegalStateException("Failed to load workflow definition or steps are missing");
         }
 
-        for (WorkflowStep step : workflow.getSteps()) {
+        for (WorkflowStep step : workflowData.getSteps()) {
             executeStep(step);
         }
     }
@@ -36,13 +38,13 @@ public class SandwichMakerDSL implements SandwichWorkflow {
         Yaml yaml = new Yaml();
         try (InputStream inputStream = this.getClass()
                 .getClassLoader()
-                .getResourceAsStream("dsl/sandwich-workflow.yaml")) {
+                .getResourceAsStream("sandwich-workflow.yaml")) {
             if (inputStream == null) {
-                throw new IllegalStateException("Cannot find sandwich-workflow.yaml");
+                throw new IllegalStateException("Cannot find sandwich-workflow.yaml in the resources");
             }
             return yaml.loadAs(inputStream, WorkflowDefinition.class);
         } catch (IOException e) {
-            throw Workflow.wrap(new RuntimeException("Failed to load workflow definition", e));
+            throw new RuntimeException("Failed to load workflow definition", e);
         }
     }
 
@@ -53,9 +55,10 @@ public class SandwichMakerDSL implements SandwichWorkflow {
 
         switch (step.getActivity()) {
             case "gatherIngredients":
+
                 activities.gatherIngredients();
                 break;
-            case "sliceBread":
+            case "sliceBreadNew":
                 activities.sliceBread();
                 break;
             case "addCondiments":
@@ -75,63 +78,25 @@ public class SandwichMakerDSL implements SandwichWorkflow {
         }
     }
 
+    @Setter
+    @Getter
     public static class WorkflowDefinition {
+        private WorkflowData workflow;
+    }
+
+    @Setter
+    @Getter
+    public static class WorkflowData {
         private String name;
         private String version;
         private String taskQueue;
         private WorkflowStep[] steps;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getVersion() {
-            return version;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
-        }
-
-        public String getTaskQueue() {
-            return taskQueue;
-        }
-
-        public void setTaskQueue(String taskQueue) {
-            this.taskQueue = taskQueue;
-        }
-
-        public WorkflowStep[] getSteps() {
-            return steps;
-        }
-
-        public void setSteps(WorkflowStep[] steps) {
-            this.steps = steps;
-        }
     }
 
+    @Setter
+    @Getter
     public static class WorkflowStep {
         private String name;
         private String activity;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getActivity() {
-            return activity;
-        }
-
-        public void setActivity(String activity) {
-            this.activity = activity;
-        }
     }
 }
